@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ProjectManager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <input type="hidden" id="toast-success" value="@TempData["Success"]" />
+    <input type="hidden" id="toast-error" value="@TempData["Error"]" />
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="sidebar-overlay"></div>
+        <div class="wrapper">
+            <aside class="sidebar">
+                <div class="sidebar-brand">
+                    <div class="brand-icon">P</div>
+                    <div class="brand-text">
+                        ProjectManager
+                        <small>Management System</small>
+                    </div>
+                </div>
+                <nav class="sidebar-nav">
+                    <div class="sidebar-heading">Main</div>
+                    <div class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index"><i class="fas fa-th-large"></i>Dashboard</a>
+                    </div>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="sidebar-heading">Management</div>
+                        <div class="nav-item">
+                            <a class="nav-link" asp-controller="Finance" asp-action="Projects"><i class="fas fa-folder"></i>Projects</a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link" asp-controller="Finance" asp-action="Assignments"><i class="fas fa-users-cog"></i>Assignments</a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link" asp-controller="Employees" asp-action="Index"><i class="fas fa-users"></i>Employees</a>
+                        </div>
+                        <div class="sidebar-heading">Finance</div>
+                        <div class="nav-item">
+                            <a class="nav-link" asp-controller="Transactions" asp-action="Index"><i class="fas fa-coins"></i>Revenue</a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link" asp-controller="Transactions" asp-action="Index" asp-route-type="Expense"><i class="fas fa-credit-card"></i>Expenses</a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link" asp-controller="Finance" asp-action="Overview"><i class="fas fa-chart-pie"></i>Overview</a>
+                        </div>
+                        <div class="sidebar-heading">Reports</div>
+                        <div class="nav-item">
+                            <a class="nav-link" asp-controller="Reports" asp-action="Revenue"><i class="fas fa-chart-bar"></i>Revenue</a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link" asp-controller="Reports" asp-action="Expense"><i class="fas fa-chart-line"></i>Expense</a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link" asp-controller="Reports" asp-action="ProfitLoss"><i class="fas fa-file-invoice-dollar"></i>P&L Statement</a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link" asp-controller="Reports" asp-action="Salaries"><i class="fas fa-money-bill-wave"></i>Salaries</a>
+                        </div>
+                        <div class="sidebar-heading">Operations</div>
+                        <div class="nav-item">
+                            <a class="nav-link" asp-controller="DailyWork" asp-action="Index"><i class="fas fa-clipboard-list"></i>Work Updates</a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link" asp-controller="AuditLogs" asp-action="Index"><i class="fas fa-shield-alt"></i>Audit Logs</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="sidebar-heading">My Work</div>
+                        <div class="nav-item">
+                            <a class="nav-link" asp-controller="DailyWork" asp-action="MyUpdates"><i class="fas fa-tasks"></i>My Updates</a>
+                        </div>
+                        <div class="nav-item">
+                            <a class="nav-link" asp-controller="DailyWork" asp-action="Create"><i class="fas fa-plus-circle"></i>Log Work</a>
+                        </div>
+                    }
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            @(User.Identity?.Name?.Substring(0,1).ToUpper() ?? "U")
+                        </div>
+                        <div>
+                            <div style="color:#fff;font-weight:600;font-size:.85rem">@User.Identity?.Name</div>
+                            <div style="font-size:.7rem;color:var(--sidebar-text)">
+                                @(User.IsInRole("Admin") ? "Administrator" : "Employee")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            <div class="main-content">
+                <header class="top-header">
+                    <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
+                    <h1 class="page-title">@ViewData["Title"]</h1>
+                    <div class="header-actions">
+                        <button class="theme-toggle"><i class="fas fa-moon"></i></button>
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-soft-primary btn-sm"><i class="fas fa-sign-out-alt me-1"></i>Logout</button>
+                        </form>
+                    </div>
+                </header>
+                <div class="page-content">
+                    <main role="main">
+                        @RenderBody()
+                    </main>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <main role="main">
+            @RenderBody()
+        </main>
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

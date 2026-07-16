@@ -1,0 +1,15 @@
+@using Microsoft.AspNetCore.Authentication.Cookies
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery AntiForgery
+
+@if (User.Identity?.IsAuthenticated ?? false)
+{
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-flex align-items-center gap-2">
+        @Html.AntiForgeryToken()
+        <span class="text-secondary me-2">@User.Identity.Name</span>
+        <button type="submit" class="btn btn-outline-secondary">Logout</button>
+    </form>
+}
+else
+{
+    <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Login</a>
+}

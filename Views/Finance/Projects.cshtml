@@ -1,0 +1,100 @@
+@model IEnumerable<ProjectManagerApp.Models.Project>
+
+@{
+    ViewData["Title"] = "Projects";
+}
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1>Projects</h1>
+        <p>Manage all projects</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus me-1"></i>New Project</a>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" name="search" class="form-control" placeholder="Search projects..." value="@(Context.Request.Query["search"].ToString())" />
+        </div>
+    </div>
+    <div class="col-md-3">
+        <select name="status" class="form-select" onchange="this.form.submit()">
+            <option value="">All Status</option>
+            <option value="New" selected="@(ViewBag.StatusFilter == "New")">New</option>
+            <option value="InProgress" selected="@(ViewBag.StatusFilter == "InProgress")">In Progress</option>
+            <option value="OnHold" selected="@(ViewBag.StatusFilter == "OnHold")">On Hold</option>
+            <option value="Completed" selected="@(ViewBag.StatusFilter == "Completed")">Completed</option>
+            <option value="Cancelled" selected="@(ViewBag.StatusFilter == "Cancelled")">Cancelled</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="paymentStatus" class="form-select" onchange="this.form.submit()">
+            <option value="">All Payment</option>
+            <option value="Pending" selected="@(ViewBag.PaymentFilter == "Pending")">Pending</option>
+            <option value="PartialReceived" selected="@(ViewBag.PaymentFilter == "PartialReceived")">Partial Received</option>
+            <option value="FullyPaid" selected="@(ViewBag.PaymentFilter == "FullyPaid")">Fully Paid</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <a asp-action="Projects" class="btn btn-outline-secondary w-100"><i class="fas fa-times me-1"></i>Clear</a>
+    </div>
+</form>
+
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover datatable mb-0">
+            <thead>
+                <tr>
+                    <th>Project</th>
+                    <th>Client</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                    <th>Revenue</th>
+                    <th>Expense</th>
+                    <th>Net</th>
+                    <th style="width:200px">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var project in Model)
+                {
+                    var revenue = project.Revenues.Sum(r => r.Amount);
+                    var expense = project.Expenses.Sum(e => e.Amount);
+                    var salary = project.SalaryPayments.Sum(s => s.NetSalary);
+                    var net = revenue - expense - salary;
+                    <tr>
+                        <td><strong>@project.Name</strong></td>
+                        <td>@project.ClientName</td>
+                        <td>
+                            <span class="badge @(project.Status == "Completed" ? "bg-success" : project.Status == "InProgress" ? "bg-primary" : project.Status == "OnHold" ? "bg-warning text-dark" : project.Status == "Cancelled" ? "bg-danger" : "bg-secondary")">
+                                @project.Status
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge @(project.PaymentStatus == "FullyPaid" ? "bg-success" : project.PaymentStatus == "PartialReceived" ? "bg-info" : "bg-warning text-dark")">
+                                @project.PaymentStatus
+                            </span>
+                        </td>
+                        <td>@revenue.ToString("C0")</td>
+                        <td>@expense.ToString("C0")</td>
+                        <td class="@(net >= 0 ? "text-success" : "text-danger") fw-bold">@net.ToString("C0")</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a asp-action="ProjectReport" asp-route-id="@project.Id" class="btn btn-outline-primary" title="Report"><i class="fas fa-file-alt"></i></a>
+                                <a asp-controller="Transactions" asp-action="ProjectTransactions" asp-route-projectId="@project.Id" class="btn btn-outline-secondary" title="Transactions"><i class="fas fa-exchange-alt"></i></a>
+                                <a asp-action="AssignProject" asp-route-projectId="@project.Id" class="btn btn-outline-info" title="Assign"><i class="fas fa-user-plus"></i></a>
+                                <a asp-action="Edit" asp-route-id="@project.Id" class="btn btn-outline-warning" title="Edit"><i class="fas fa-edit"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="8" class="text-center text-muted py-4">No projects found. <a asp-action="Create">Create one</a></td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

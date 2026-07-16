@@ -1,0 +1,90 @@
+@model ProjectManagerApp.ViewModels.ProjectReportViewModel
+
+@{
+    ViewData["Title"] = "Project Report";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h2 mb-1">@Model.Project.Name</h1>
+        <p class="text-muted mb-0">@Model.Project.ClientName | @Model.Project.Status | @Model.Project.PaymentStatus</p>
+    </div>
+    <div>
+        <a asp-controller="Finance" asp-action="Edit" asp-route-id="@Model.Project.Id" class="btn btn-primary">Edit Project</a>
+        <a asp-controller="Transactions" asp-action="ProjectTransactions" asp-route-projectId="@Model.Project.Id" class="btn btn-secondary">Transactions</a>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.Project.Description))
+{
+    <p class="text-muted">@Model.Project.Description</p>
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm border-success">
+            <div class="card-body">
+                <h6 class="text-success">Total Revenue</h6>
+                <h3>@Model.TotalRevenue.ToString("C0")</h3>
+                @if (Model.Project.ProjectCost.HasValue)
+                {
+                    <small class="text-muted">Target: @Model.Project.ProjectCost.Value.ToString("C0")</small>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm border-danger">
+            <div class="card-body">
+                <h6 class="text-danger">Total Expense</h6>
+                <h3>@Model.TotalExpense.ToString("C0")</h3>
+                @if (Model.Project.EstimatedExpense.HasValue)
+                {
+                    <small class="text-muted">Budget: @Model.Project.EstimatedExpense.Value.ToString("C0")</small>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm border-info">
+            <div class="card-body">
+                <h6 class="text-info">Total Salary</h6>
+                <h3>@Model.TotalSalary.ToString("C0")</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm @(Model.NetAmount >= 0 ? "border-primary" : "border-danger")">
+            <div class="card-body">
+                <h6 class="@(Model.NetAmount >= 0 ? "text-primary" : "text-danger")">Net Amount</h6>
+                <h3>@Model.NetAmount.ToString("C0")</h3>
+                <small class="text-muted">@(Model.NetAmount >= 0 ? "Profitable" : "Loss")</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white"><h5 class="mb-0">Project Details</h5></div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr><th>Start Date</th><td>@Model.Project.StartDate?.ToShortDateString() ?? "Not set"</td></tr>
+                    <tr><th>Expected End</th><td>@Model.Project.ExpectedEndDate?.ToShortDateString() ?? "Not set"</td></tr>
+                    <tr><th>Category</th><td>@Model.Project.Category ?? "N/A"</td></tr>
+                    <tr><th>Project Cost</th><td>@Model.Project.ProjectCost?.ToString("C0") ?? "N/A"</td></tr>
+                    <tr><th>Estimated Expense</th><td>@Model.Project.EstimatedExpense?.ToString("C0") ?? "N/A"</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white"><h5 class="mb-0">Notes</h5></div>
+            <div class="card-body">
+                <p class="mb-0">@(!string.IsNullOrEmpty(Model.Project.Notes) ? Model.Project.Notes : "No notes.")</p>
+            </div>
+        </div>
+    </div>
+</div>

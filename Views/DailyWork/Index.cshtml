@@ -1,0 +1,90 @@
+@model IEnumerable<ProjectManagerApp.Models.DailyWorkUpdate>
+
+@{
+    ViewData["Title"] = "Work Updates";
+    var employees = ViewBag.Employees as IEnumerable<ProjectManagerApp.Models.Employee>;
+    var projects = ViewBag.Projects as IEnumerable<ProjectManagerApp.Models.Project>;
+}
+
+<div class="page-header">
+    <h1>Employee Work Updates</h1>
+    <p>Track daily work across projects</p>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-3">
+        <select name="employeeId" class="form-select" onchange="this.form.submit()">
+            <option value="">All Employees</option>
+            @if (employees != null)
+            {
+                @foreach (var emp in employees)
+                {
+                    <option value="@emp.Id" selected="@(Context.Request.Query["employeeId"].ToString() == emp.Id.ToString())">@emp.FullName</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="projectId" class="form-select" onchange="this.form.submit()">
+            <option value="">All Projects</option>
+            @if (projects != null)
+            {
+                @foreach (var p in projects)
+                {
+                    <option value="@p.Id" selected="@(Context.Request.Query["projectId"].ToString() == p.Id.ToString())">@p.Name</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <input type="date" name="from" class="form-control" value="@(Context.Request.Query["from"].ToString())" />
+    </div>
+    <div class="col-md-2">
+        <input type="date" name="to" class="form-control" value="@(Context.Request.Query["to"].ToString())" />
+    </div>
+    <div class="col-md-2">
+        <a asp-action="Index" class="btn btn-outline-secondary w-100"><i class="fas fa-times me-1"></i>Clear</a>
+    </div>
+</form>
+
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover datatable mb-0">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Employee</th>
+                    <th>Project</th>
+                    <th>Work Description</th>
+                    <th>Hours</th>
+                    <th>Remarks</th>
+                    <th style="width:80px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var w in Model)
+                {
+                    <tr>
+                        <td>@w.WorkDate.ToShortDateString()</td>
+                        <td><strong>@w.Employee?.FullName</strong></td>
+                        <td>@w.Project?.Name</td>
+                        <td>@w.WorkDescription</td>
+                        <td><span class="badge bg-light text-dark">@w.HoursWorked hrs</span></td>
+                        <td>@w.Remarks</td>
+                        <td>
+                            <form asp-action="Delete" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@w.Id" />
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this update?')"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="7" class="text-center text-muted py-4">No work updates found.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,96 @@
+@model ProjectManagerApp.ViewModels.OverviewReportViewModel
+
+@{
+    ViewData["Title"] = "Profit & Loss";
+}
+
+<h1>Profit & Loss Statement</h1>
+<p class="text-muted">@ViewBag.FromDate to @ViewBag.ToDate</p>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-success text-white">
+            <div class="card-body">
+                <h6 class="text-white-50">Total Revenue</h6>
+                <h3>@Model.TotalRevenue.ToString("C0")</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-danger text-white">
+            <div class="card-body">
+                <h6 class="text-white-50">Total Expenses</h6>
+                <h3 class="mb-0">@Model.TotalExpense.ToString("C0")</h3>
+                <small>+ Salary: @Model.TotalSalary.ToString("C0")</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-info text-white">
+            <div class="card-body">
+                <h6 class="text-white-50">Total Salary</h6>
+                <h3>@Model.TotalSalary.ToString("C0")</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm @(Model.NetAmount >= 0 ? "bg-primary" : "bg-danger") text-white">
+            <div class="card-body">
+                <h6 class="text-white-50">Net @(Model.NetAmount >= 0 ? "Profit" : "Loss")</h6>
+                <h3>@Model.NetAmount.ToString("C0")</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <input type="date" name="from" class="form-control" value="@(Context.Request.Query["from"].ToString())" />
+    </div>
+    <div class="col-md-4">
+        <input type="date" name="to" class="form-control" value="@(Context.Request.Query["to"].ToString())" />
+    </div>
+    <div class="col-md-4">
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a asp-action="ProfitLoss" class="btn btn-outline-secondary">This Year</a>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Project</th>
+                <th>Revenue</th>
+                <th>Expense</th>
+                <th>Salary</th>
+                <th>Net</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var project in Model.Projects)
+            {
+                var revenue = project.Revenues.Sum(r => r.Amount);
+                var expense = project.Expenses.Sum(e => e.Amount);
+                var salary = project.SalaryPayments.Sum(s => s.NetSalary);
+                var net = revenue - expense - salary;
+                <tr>
+                    <td><strong>@project.Name</strong></td>
+                    <td class="text-success">@revenue.ToString("C0")</td>
+                    <td class="text-danger">@expense.ToString("C0")</td>
+                    <td>@salary.ToString("C0")</td>
+                    <td class="@(net >= 0 ? "text-success" : "text-danger") fw-bold">@net.ToString("C0")</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot class="table-light">
+            <tr>
+                <th><strong>Total</strong></th>
+                <th class="text-success">@Model.TotalRevenue.ToString("C0")</th>
+                <th class="text-danger">@Model.TotalExpense.ToString("C0")</th>
+                <th>@Model.TotalSalary.ToString("C0")</th>
+                <th class="@(Model.NetAmount >= 0 ? "text-success" : "text-danger")">@Model.NetAmount.ToString("C0")</th>
+            </tr>
+        </tfoot>
+    </table>
+</div>

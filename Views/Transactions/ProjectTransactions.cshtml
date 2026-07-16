@@ -1,0 +1,133 @@
+@model ProjectManagerApp.Models.Project
+
+@{
+    ViewData["Title"] = "Transactions";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="h2 mb-1">@Model.Name</h1>
+        <p class="text-muted mb-0">Transaction History</p>
+    </div>
+    <div>
+        <a asp-action="AddRevenue" asp-route-projectId="@Model.Id" class="btn btn-success">+ Revenue</a>
+        <a asp-action="AddExpense" asp-route-projectId="@Model.Id" class="btn btn-danger">+ Expense</a>
+        <a asp-controller="Finance" asp-action="ProjectReport" asp-route-id="@Model.Id" class="btn btn-outline-primary">Report</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white"><h5 class="mb-0">Revenue (@Model.Revenues.Sum(r => r.Amount).ToString("C0"))</h5></div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Source</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var revenue in Model.Revenues.OrderByDescending(r => r.RevenueDate))
+                        {
+                            <tr>
+                                <td>@revenue.RevenueDate.ToShortDateString()</td>
+                                <td>@revenue.RevenueSource</td>
+                                <td>@revenue.Reason</td>
+                                <td class="text-success fw-bold">@revenue.Amount.ToString("C2")</td>
+                                <td>
+                                    <a asp-action="EditRevenue" asp-route-id="@revenue.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <form asp-action="DeleteRevenue" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@revenue.Id" />
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Del</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.Revenues.Any())
+                        {
+                            <tr><td colspan="5" class="text-center text-muted py-3">No revenue entries.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white"><h5 class="mb-0">Expenses (@Model.Expenses.Sum(e => e.Amount).ToString("C0"))</h5></div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var expense in Model.Expenses.OrderByDescending(e => e.ExpenseDate))
+                        {
+                            <tr>
+                                <td>@expense.ExpenseDate.ToShortDateString()</td>
+                                <td>@expense.ExpenseCategory</td>
+                                <td>@expense.ExpenseReason</td>
+                                <td class="text-danger fw-bold">@expense.Amount.ToString("C2")</td>
+                                <td>
+                                    <a asp-action="EditExpense" asp-route-id="@expense.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <form asp-action="DeleteExpense" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@expense.Id" />
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Del</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.Expenses.Any())
+                        {
+                            <tr><td colspan="5" class="text-center text-muted py-3">No expense entries.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white"><h5 class="mb-0">Salary Payments (@Model.SalaryPayments.Sum(s => s.NetSalary).ToString("C0"))</h5></div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Month</th>
+                    <th>Net Salary</th>
+                    <th>Payment Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model.SalaryPayments.OrderByDescending(s => s.PaymentDate))
+                {
+                    <tr>
+                        <td>@s.Month</td>
+                        <td>@s.NetSalary.ToString("C2")</td>
+                        <td>@s.PaymentDate.ToShortDateString()</td>
+                        <td><span class="badge bg-info">@s.PaymentStatus</span></td>
+                    </tr>
+                }
+                @if (!Model.SalaryPayments.Any())
+                {
+                    <tr><td colspan="4" class="text-center text-muted py-3">No salary payments.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

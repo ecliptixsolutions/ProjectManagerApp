@@ -1,0 +1,90 @@
+@model ProjectManagerApp.Models.Project
+
+@{
+    ViewData["Title"] = "Add Project";
+}
+
+<h1>Add Project</h1>
+
+<form asp-action="Create" method="post" class="row g-3">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="col-md-6">
+        <label asp-for="Name" class="form-label">Project Name *</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="ClientName" class="form-label">Client Name *</label>
+        <input asp-for="ClientName" class="form-control" />
+        <span asp-validation-for="ClientName" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Category" class="form-label">Category</label>
+        <select asp-for="Category" class="form-select">
+            <option value="">Select...</option>
+            <option value="Web Development">Web Development</option>
+            <option value="Mobile App">Mobile App</option>
+            <option value="Design">Design</option>
+            <option value="Consulting">Consulting</option>
+            <option value="Maintenance">Maintenance</option>
+            <option value="Other">Other</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="StartDate" class="form-label">Start Date</label>
+        <input asp-for="StartDate" class="form-control" type="date" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="ExpectedEndDate" class="form-label">Expected End Date</label>
+        <input asp-for="ExpectedEndDate" class="form-control" type="date" />
+    </div>
+
+    <div class="col-12">
+        <label asp-for="Description" class="form-label">Description</label>
+        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="ProjectCost" class="form-label">Project Cost (Revenue)</label>
+        <input asp-for="ProjectCost" class="form-control" type="number" step="0.01" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="EstimatedExpense" class="form-label">Estimated Expense</label>
+        <input asp-for="EstimatedExpense" class="form-control" type="number" step="0.01" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Status" class="form-label">Status</label>
+        <select asp-for="Status" class="form-select">
+            <option value="New">New</option>
+            <option value="InProgress">In Progress</option>
+            <option value="OnHold">On Hold</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+        </select>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="PaymentStatus" class="form-label">Payment Status</label>
+        <select asp-for="PaymentStatus" class="form-select">
+            <option value="Pending">Pending</option>
+            <option value="PartialReceived">Partial Received</option>
+            <option value="FullyPaid">Fully Paid</option>
+        </select>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="Notes" class="form-label">Notes</label>
+        <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Save Project</button>
+        <a asp-action="Projects" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

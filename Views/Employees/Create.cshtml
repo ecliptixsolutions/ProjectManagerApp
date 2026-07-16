@@ -1,0 +1,120 @@
+@model ProjectManagerApp.Models.Employee
+
+@{
+    ViewData["Title"] = "Add Employee";
+}
+
+<div class="page-header">
+    <h1>Add Employee</h1>
+    <p>Register a new employee</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Create" method="post" class="row g-3">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+
+                    <div class="col-md-6">
+                        <label asp-for="FullName" class="form-label required"></label>
+                        <input asp-for="FullName" class="form-control" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" type="email" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Phone" class="form-label"></label>
+                        <input asp-for="Phone" class="form-control" />
+                        <span asp-validation-for="Phone" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Designation" class="form-label"></label>
+                        <input asp-for="Designation" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Department" class="form-label"></label>
+                        <input asp-for="Department" class="form-control" />
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Address" class="form-label"></label>
+                        <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="EmploymentType" class="form-label"></label>
+                        <select asp-for="EmploymentType" class="form-select">
+                            <option value="">Select...</option>
+                            <option value="Permanent">Permanent</option>
+                            <option value="Contract">Contract</option>
+                            <option value="Intern">Intern</option>
+                            <option value="Probation">Probation</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="JoinedDate" class="form-label"></label>
+                        <input asp-for="JoinedDate" class="form-control" type="date" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Status" class="form-label"></label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12"><hr><h6 class="fw-semibold">Salary Details</h6></div>
+                    <div class="col-md-4">
+                        <label asp-for="SalaryAmount" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-rupee-sign"></i></span>
+                            <input asp-for="SalaryAmount" class="form-control" type="number" step="0.01" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="SalaryType" class="form-label"></label>
+                        <select asp-for="SalaryType" class="form-select">
+                            <option value="Monthly">Monthly</option>
+                            <option value="Weekly">Weekly</option>
+                            <option value="Hourly">Hourly</option>
+                            <option value="Project">Project Based</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12"><hr><h6 class="fw-semibold">Bank Details</h6></div>
+                    <div class="col-md-4">
+                        <label asp-for="BankName" class="form-label"></label>
+                        <input asp-for="BankName" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="AccountNumber" class="form-label"></label>
+                        <input asp-for="AccountNumber" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="IfscCode" class="form-label"></label>
+                        <input asp-for="IfscCode" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="UpiId" class="form-label"></label>
+                        <input asp-for="UpiId" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Notes" class="form-label"></label>
+                        <input asp-for="Notes" class="form-control" />
+                    </div>
+
+                    <div class="col-12 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Save</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

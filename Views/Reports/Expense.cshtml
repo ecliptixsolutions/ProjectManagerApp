@@ -1,0 +1,100 @@
+@model ProjectManagerApp.ViewModels.ExpenseReportViewModel
+
+@{
+    ViewData["Title"] = "Expense Report";
+    var categories = ViewBag.Categories as List<string>;
+}
+
+<h1>Expense Report</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm bg-danger text-white">
+            <div class="card-body">
+                <h6 class="text-white-50">Daily Expense</h6>
+                <h3>@Model.DailyExpense.ToString("C0")</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm bg-warning text-white">
+            <div class="card-body">
+                <h6 class="text-white-50">Monthly Expense</h6>
+                <h3>@Model.MonthlyExpense.ToString("C0")</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm bg-secondary text-white">
+            <div class="card-body">
+                <h6 class="text-white-50">Yearly Expense</h6>
+                <h3>@Model.YearlyExpense.ToString("C0")</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-3">
+        <input type="date" name="from" class="form-control" value="@(Context.Request.Query["from"].ToString())" />
+    </div>
+    <div class="col-md-3">
+        <input type="date" name="to" class="form-control" value="@(Context.Request.Query["to"].ToString())" />
+    </div>
+    <div class="col-md-3">
+        <select name="category" class="form-select" onchange="this.form.submit()">
+            <option value="">All Categories</option>
+            @if (categories != null)
+            {
+                @foreach (var c in categories)
+                {
+                    <option value="@c" selected="@(Context.Request.Query["category"].ToString() == c)">@c</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <a asp-action="Expense" class="btn btn-outline-secondary w-100">Clear</a>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Reason</th>
+                <th>Project</th>
+                <th>Amount</th>
+                <th>Paid By</th>
+                <th>Method</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var e in Model.Expenses)
+            {
+                <tr>
+                    <td>@e.ExpenseDate.ToShortDateString()</td>
+                    <td>@e.ExpenseCategory</td>
+                    <td>@e.ExpenseReason</td>
+                    <td>@e.Project?.Name</td>
+                    <td class="text-danger fw-bold">@e.Amount.ToString("C2")</td>
+                    <td>@e.PaidBy</td>
+                    <td>@e.PaymentMethod</td>
+                </tr>
+            }
+            @if (!Model.Expenses.Any())
+            {
+                <tr><td colspan="7" class="text-center text-muted py-4">No expense entries.</td></tr>
+            }
+        </tbody>
+        <tfoot class="table-light">
+            <tr>
+                <th colspan="4" class="text-end">Total:</th>
+                <th class="text-danger">@Model.Expenses.Sum(e => e.Amount).ToString("C2")</th>
+                <th colspan="2"></th>
+            </tr>
+        </tfoot>
+    </table>
+</div>

@@ -1,0 +1,100 @@
+@{
+    ViewData["Title"] = "My Dashboard";
+    var employee = ViewBag.Employee as ProjectManagerApp.Models.Employee;
+    var assignments = ViewBag.Assignments as IEnumerable<ProjectManagerApp.Models.ProjectAssignment>;
+    var updates = ViewBag.Updates as IEnumerable<ProjectManagerApp.Models.DailyWorkUpdate>;
+}
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1>Welcome, @employee?.FullName</h1>
+        <p>@employee?.Designation &middot; @employee?.Department</p>
+    </div>
+    <a asp-controller="DailyWork" asp-action="Create" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Log Today's Work</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#eef2ff;color:#4f46e5"><i class="fas fa-tasks"></i></div>
+            <div class="stat-label">Assigned Projects</div>
+            <div class="stat-value">@(assignments?.Count() ?? 0)</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#ecfdf5;color:#10b981"><i class="fas fa-clipboard-check"></i></div>
+            <div class="stat-label">Work Updates</div>
+            <div class="stat-value">@(updates?.Count() ?? 0)</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#f0f9ff;color:#06b6d4"><i class="fas fa-clock"></i></div>
+            <div class="stat-label">Total Hours</div>
+            <div class="stat-value">@(updates?.Sum(u => u.HoursWorked).ToString("F1") ?? "0")</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fef2f2;color:#ef4444"><i class="fas fa-calendar-day"></i></div>
+            <div class="stat-label">Last Activity</div>
+            <div class="stat-value" style="font-size:1rem">
+                @(updates?.Any() == true ? updates.First().WorkDate.ToString("MMM dd") : "N/A")
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header"><i class="fas fa-folder-open me-2 text-primary"></i>My Assigned Projects</div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    @if (assignments != null)
+                    {
+                        @foreach (var a in assignments)
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>@a.Project?.Name</strong>
+                                    <br><small class="text-muted">Role: @a.Role</small>
+                                </div>
+                                <span class="badge bg-info">@a.Project?.Status</span>
+                            </div>
+                        }
+                    }
+                    @if (assignments == null || !assignments.Any())
+                    {
+                        <div class="list-group-item text-muted">No projects assigned yet.</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header"><i class="fas fa-history me-2 text-primary"></i>Recent Work Updates</div>
+            <div class="card-body">
+                <div class="activity-timeline">
+                    @if (updates != null)
+                    {
+                        @foreach (var w in updates.Take(5))
+                        {
+                            <div class="activity-item">
+                                <strong>@w.Project?.Name</strong>
+                                <div>@w.WorkDescription</div>
+                                <div class="activity-time">@w.WorkDate.ToShortDateString() &middot; @w.HoursWorked hrs</div>
+                            </div>
+                        }
+                    }
+                    @if (updates == null || !updates.Any())
+                    {
+                        <div class="text-muted small">No work logged yet. <a asp-controller="DailyWork" asp-action="Create">Log your first update</a></div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

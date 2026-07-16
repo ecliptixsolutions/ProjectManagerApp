@@ -1,0 +1,104 @@
+@model ProjectManagerApp.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Sign In";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In - ProjectManager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-card">
+            <div class="login-logo">
+                <div class="logo-icon">P</div>
+                <h1>Welcome Back</h1>
+                <p>Sign in to your account to continue</p>
+            </div>
+
+            <form asp-action="Login" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small d-none"></div>
+
+                <div class="mb-3">
+                    <label asp-for="UserName" class="form-label">Username</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        <input asp-for="UserName" class="form-control" placeholder="Enter your username" autofocus />
+                    </div>
+                    <span asp-validation-for="UserName" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        <input asp-for="Password" class="form-control" placeholder="Enter your password" />
+                        <button class="input-group-text" type="button" onclick="togglePassword()" style="border-left:none;border-right:1px solid var(--border-color);border-radius:0 8px 8px 0;cursor:pointer">
+                            <i class="far fa-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <input type="hidden" asp-for="ReturnUrl" />
+
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+                    <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                </button>
+            </form>
+
+            <div class="text-center mt-4">
+                <p class="small text-muted mb-1">Demo Credentials</p>
+                <div class="small text-muted">
+                    <span class="badge bg-light text-dark me-1">Admin: admin / Admin@123</span>
+                    <span class="badge bg-light text-dark">Employee: employee1 / Emp@123</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function togglePassword() {
+            const pwd = $('#@Html.IdFor(m => m.Password)');
+            const icon = $('#toggleIcon');
+            if (pwd.attr('type') === 'password') {
+                pwd.attr('type', 'text');
+                icon.removeClass('fa-eye').addClass('fa-eye-slash');
+            } else {
+                pwd.attr('type', 'password');
+                icon.removeClass('fa-eye-slash').addClass('fa-eye');
+            }
+        }
+
+        $(function () {
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <text>
+                const errors = [];
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <text>errors.push('@error.ErrorMessage');</text>
+                }
+                if (errors.length) {
+                    Swal.fire({ icon: 'error', title: 'Login Failed', text: errors.join('\n'), confirmButtonColor: '#4f46e5' });
+                }
+                </text>
+            }
+        });
+    </script>
+</body>
+</html>

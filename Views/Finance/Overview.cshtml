@@ -1,0 +1,104 @@
+@model ProjectManagerApp.ViewModels.OverviewReportViewModel
+
+@{
+    ViewData["Title"] = "Financial Overview";
+}
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1>Financial Overview</h1>
+        <p>Summary of all financial metrics</p>
+    </div>
+    <a asp-controller="Reports" asp-action="ProfitLoss" class="btn btn-outline-primary"><i class="fas fa-file-invoice me-1"></i>Detailed P&L</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#ecfdf5;color:#10b981"><i class="fas fa-coins"></i></div>
+            <div class="stat-label">Total Revenue</div>
+            <div class="stat-value text-success">@Model.TotalRevenue.ToString("C0")</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fef2f2;color:#ef4444"><i class="fas fa-credit-card"></i></div>
+            <div class="stat-label">Total Expense</div>
+            <div class="stat-value text-danger">@Model.TotalExpense.ToString("C0")</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#f0f9ff;color:#06b6d4"><i class="fas fa-money-bill-wave"></i></div>
+            <div class="stat-label">Total Salary</div>
+            <div class="stat-value">@Model.TotalSalary.ToString("C0")</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:@(Model.NetAmount >= 0 ? "#fffbeb;color:#f59e0b" : "#fef2f2;color:#ef4444")"><i class="fas fa-chart-line"></i></div>
+            <div class="stat-label">Net Profit</div>
+            <div class="stat-value @(Model.NetAmount >= 0 ? "text-success" : "text-danger")">@Model.NetAmount.ToString("C0")</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card text-center">
+            <div class="stat-label">Total Projects</div>
+            <div class="stat-value">@Model.TotalProjects</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card text-center">
+            <div class="stat-label">Active Projects</div>
+            <div class="stat-value">@Model.ActiveProjects</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card text-center">
+            <div class="stat-label">Completed Projects</div>
+            <div class="stat-value">@Model.CompletedProjects</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><i class="fas fa-table me-2 text-primary"></i>Project Breakdown</div>
+    <div class="card-body p-0">
+        <table class="table table-hover datatable mb-0">
+            <thead>
+                <tr>
+                    <th>Project</th>
+                    <th>Client</th>
+                    <th>Status</th>
+                    <th>Revenue</th>
+                    <th>Expense</th>
+                    <th>Salary</th>
+                    <th>Net</th>
+                    <th style="width:100px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var project in Model.Projects)
+                {
+                    var revenue = project.Revenues.Sum(r => r.Amount);
+                    var expense = project.Expenses.Sum(e => e.Amount);
+                    var salary = project.SalaryPayments.Sum(s => s.NetSalary);
+                    var net = revenue - expense - salary;
+                    <tr>
+                        <td><strong>@project.Name</strong></td>
+                        <td>@project.ClientName</td>
+                        <td><span class="badge bg-secondary">@project.Status</span></td>
+                        <td class="text-success fw-medium">@revenue.ToString("C0")</td>
+                        <td class="text-danger fw-medium">@expense.ToString("C0")</td>
+                        <td>@salary.ToString("C0")</td>
+                        <td class="@(net >= 0 ? "text-success" : "text-danger") fw-bold">@net.ToString("C0")</td>
+                        <td><a asp-action="ProjectReport" asp-route-id="@project.Id" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,92 @@
+@model ProjectManagerApp.ViewModels.AssignProjectViewModel
+
+@{
+    ViewData["Title"] = "Assign Project";
+}
+
+<h1>Assign: @Model.Project?.Name</h1>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white"><h5 class="mb-0">Current Assignments</h5></div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Employee</th>
+                            <th>Role</th>
+                            <th>Date</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var a in Model.CurrentAssignments)
+                        {
+                            <tr>
+                                <td>@a.Employee?.FullName</td>
+                                <td>@a.Role</td>
+                                <td>@a.AssignmentDate.ToShortDateString()</td>
+                                <td>
+                                    <form asp-action="RemoveAssignment" method="post">
+                                        <input type="hidden" name="id" value="@a.Id" />
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.CurrentAssignments.Any())
+                        {
+                            <tr><td colspan="4" class="text-center text-muted py-3">No assignments yet.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white"><h5 class="mb-0">Assign Employees</h5></div>
+            <div class="card-body">
+                <form asp-action="AssignProject" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="ProjectId" value="@Model.ProjectId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Select Employees</label>
+                        <div class="list-group" style="max-height: 300px; overflow-y: auto;">
+                            @foreach (var emp in Model.AvailableEmployees)
+                            {
+                                <label class="list-group-item d-flex gap-2">
+                                    <input class="form-check-input flex-shrink-0" type="checkbox" name="EmployeeIds" value="@emp.Id" />
+                                    <span>
+                                        <strong>@emp.FullName</strong>
+                                        <br /><small class="text-muted">@emp.Designation - @emp.Department</small>
+                                    </span>
+                                </label>
+                            }
+                            @if (!Model.AvailableEmployees.Any())
+                            {
+                                <div class="list-group-item text-muted">All active employees are already assigned.</div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Role in Project</label>
+                        <input type="text" name="Role" class="form-control" placeholder="e.g., Developer, Designer, Manager" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Assignment Date</label>
+                        <input type="date" name="AssignmentDate" class="form-control" value="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Assign Employees</button>
+                    <a asp-action="Projects" class="btn btn-secondary">Back</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

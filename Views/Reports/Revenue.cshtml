@@ -1,0 +1,100 @@
+@model ProjectManagerApp.ViewModels.RevenueReportViewModel
+
+@{
+    ViewData["Title"] = "Revenue Report";
+    var sources = ViewBag.Sources as List<string>;
+}
+
+<h1>Revenue Report</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm bg-success text-white">
+            <div class="card-body">
+                <h6 class="text-white-50">Daily Revenue</h6>
+                <h3>@Model.DailyRevenue.ToString("C0")</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm bg-primary text-white">
+            <div class="card-body">
+                <h6 class="text-white-50">Monthly Revenue</h6>
+                <h3>@Model.MonthlyRevenue.ToString("C0")</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm bg-info text-white">
+            <div class="card-body">
+                <h6 class="text-white-50">Yearly Revenue</h6>
+                <h3>@Model.YearlyRevenue.ToString("C0")</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-3">
+        <input type="date" name="from" class="form-control" value="@(Context.Request.Query["from"].ToString())" />
+    </div>
+    <div class="col-md-3">
+        <input type="date" name="to" class="form-control" value="@(Context.Request.Query["to"].ToString())" />
+    </div>
+    <div class="col-md-3">
+        <select name="source" class="form-select" onchange="this.form.submit()">
+            <option value="">All Sources</option>
+            @if (sources != null)
+            {
+                @foreach (var s in sources)
+                {
+                    <option value="@s" selected="@(Context.Request.Query["source"].ToString() == s)">@s</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <a asp-action="Revenue" class="btn btn-outline-secondary w-100">Clear</a>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Date</th>
+                <th>Source</th>
+                <th>Reason</th>
+                <th>Project</th>
+                <th>Amount</th>
+                <th>Received By</th>
+                <th>Method</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model.Revenues)
+            {
+                <tr>
+                    <td>@r.RevenueDate.ToShortDateString()</td>
+                    <td>@r.RevenueSource</td>
+                    <td>@r.Reason</td>
+                    <td>@r.Project?.Name</td>
+                    <td class="text-success fw-bold">@r.Amount.ToString("C2")</td>
+                    <td>@r.ReceivedBy</td>
+                    <td>@r.PaymentMethod</td>
+                </tr>
+            }
+            @if (!Model.Revenues.Any())
+            {
+                <tr><td colspan="7" class="text-center text-muted py-4">No revenue entries.</td></tr>
+            }
+        </tbody>
+        <tfoot class="table-light">
+            <tr>
+                <th colspan="4" class="text-end">Total:</th>
+                <th class="text-success">@Model.Revenues.Sum(r => r.Amount).ToString("C2")</th>
+                <th colspan="2"></th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
