@@ -75,6 +75,13 @@
                         <div class="nav-item">
                             <a class="nav-link" asp-controller="AuditLogs" asp-action="Index"><i class="fas fa-shield-alt"></i>Audit Logs</a>
                         </div>
+                        @if (User.Identity?.Name == "swet_patel")
+                        {
+                            <div class="sidebar-heading">System</div>
+                            <div class="nav-item">
+                                <a class="nav-link" asp-controller="Database" asp-action="Index"><i class="fas fa-database"></i>Backup &amp; Restore</a>
+                            </div>
+                        }
                     }
                     else
                     {

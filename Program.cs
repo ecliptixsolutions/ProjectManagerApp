@@ -48,6 +48,31 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<ApplicationDbContext>();
     SeedData.EnsureSeedData(context);
+
+    var env = services.GetRequiredService<IWebHostEnvironment>();
+    var backupDir = Path.Combine(env.ContentRootPath, "backups");
+    Directory.CreateDirectory(backupDir);
+
+    var dbPath = context.Database.GetConnectionString();
+    if (dbPath != null && dbPath.StartsWith("Data Source="))
+        dbPath = dbPath["Data Source=".Length..];
+    else
+        dbPath = Path.Combine(env.ContentRootPath, "app.db");
+
+    if (System.IO.File.Exists(dbPath))
+    {
+        var timestamp = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
+        var autoBackup = Path.Combine(backupDir, $"auto_{timestamp}.db");
+        System.IO.File.Copy(dbPath, autoBackup, overwrite: true);
+
+        var backups = new DirectoryInfo(backupDir)
+            .GetFiles("auto_*.db")
+            .OrderByDescending(f => f.LastWriteTime)
+            .Skip(5)
+            .ToList();
+        foreach (var old in backups)
+            old.Delete();
+    }
 }
 
 app.Run();

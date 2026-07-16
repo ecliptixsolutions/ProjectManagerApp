@@ -1,0 +1,80 @@
+@model List<BackupEntry>
+@{
+    ViewData["Title"] = "Backup & Restore";
+}
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1>Backup & Restore</h1>
+        <p>Manage database backups</p>
+    </div>
+    <form asp-action="CreateBackup" method="post" style="display:inline">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-database me-1"></i>Create Backup Now
+        </button>
+    </form>
+</div>
+
+<div class="alert alert-info">
+    <i class="fas fa-info-circle me-2"></i>
+    Backups are stored inside the container and will be lost on redeploy.
+    Download your backups to keep them safe.
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-history me-2 text-primary"></i>Backup History
+    </div>
+    <div class="card-body p-0">
+        @if (Model.Any())
+        {
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>File Name</th>
+                        <th>Size</th>
+                        <th>Created</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var b in Model)
+                    {
+                        <tr>
+                            <td><code>@b.FileName</code></td>
+                            <td>@b.SizeDisplay</td>
+                            <td>@b.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy h:mm tt")</td>
+                            <td class="text-end">
+                                <a asp-action="Download" asp-route-fileName="@b.FileName" class="btn btn-sm btn-soft-primary">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                                <form asp-action="Restore" method="post" style="display:inline" onsubmit="return confirm('Restore will replace current data. Continue?')">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="fileName" value="@b.FileName" />
+                                    <button type="submit" class="btn btn-sm btn-soft-warning">
+                                        <i class="fas fa-undo"></i> Restore
+                                    </button>
+                                </form>
+                                <form asp-action="Delete" method="post" style="display:inline" onsubmit="return confirm('Delete this backup?')">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="fileName" value="@b.FileName" />
+                                    <button type="submit" class="btn btn-sm btn-soft-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="fas fa-database fa-3x mb-3 d-block"></i>
+                <p>No backups yet. Click "Create Backup Now" to create one.</p>
+            </div>
+        }
+    </div>
+</div>

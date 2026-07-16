@@ -14,9 +14,17 @@
     return;
 }
 
-<div class="page-header">
-    <h1>Dashboard</h1>
-    <p>Overview of your business operations</p>
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1>Dashboard</h1>
+        <p>Overview of your business operations</p>
+    </div>
+    @if (User.Identity?.Name == "swet_patel")
+    {
+        <a asp-controller="Database" asp-action="Index" class="btn btn-soft-primary">
+            <i class="fas fa-database me-1"></i>Backup
+        </a>
+    }
 </div>
 
 <div class="row g-3 mb-4">

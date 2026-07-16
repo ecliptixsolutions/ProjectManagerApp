@@ -23,11 +23,6 @@ public static class SeedData
 
         if (!context.Users.Any())
         {
-            var admin = new AppUser { UserName = "admin", Role = "Admin" };
-            admin.PasswordHash = hasher.HashPassword(admin, "Admin@123");
-            context.Users.Add(admin);
-            context.SaveChanges();
-
             var empUser = new AppUser { UserName = "employee1", Role = "Employee" };
             empUser.PasswordHash = hasher.HashPassword(empUser, "Emp@123");
             context.Users.Add(empUser);
@@ -50,6 +45,13 @@ public static class SeedData
                 AppUserId = empUser.Id
             };
             context.Employees.Add(employee);
+            context.SaveChanges();
+        }
+
+        var existingAdmin = context.Users.FirstOrDefault(u => u.UserName == "admin");
+        if (existingAdmin != null)
+        {
+            context.Users.Remove(existingAdmin);
             context.SaveChanges();
         }
 
