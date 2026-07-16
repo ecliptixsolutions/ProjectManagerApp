@@ -9,7 +9,5 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 EXPOSE 80
 COPY --from=build /app/out .
-ENV ASPNETCORE_URLS=http://+:80
 ENV ASPNETCORE_ENVIRONMENT=Production
-VOLUME /data
-ENTRYPOINT ["dotnet", "ProjectManagerApp.dll"]
+CMD dotnet ProjectManagerApp.dll --urls http://+:$PORT

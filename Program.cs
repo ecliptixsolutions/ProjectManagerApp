@@ -4,11 +4,8 @@ using ProjectManagerApp.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var dbPath = builder.Environment.IsDevelopment()
-    ? "Data Source=app.db"
-    : "Data Source=/data/app.db";
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? dbPath));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=app.db"));
 
 var cookieSecurePolicy = builder.Environment.IsDevelopment()
     ? CookieSecurePolicy.SameAsRequest
